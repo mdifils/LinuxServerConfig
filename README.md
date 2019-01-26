@@ -30,7 +30,8 @@ Here is a summary of information about my server for the reviewer:
 <ins>certbot</ins>: <br>
 * **SSH key location**: <br>
 <ins>Public key</ins>: /home/grader/.ssh/authorized_keys. <br>
-<ins>Private key</ins>: Put the content provided during the submission in either folder <br>
+<ins>Private key</ins>: Put the content provided during the submission in either
+suggested folder <br>
 _Windows_: /c/Users/owner/.ssh/privatekey.pem <br>
 _MAC_: /Users/owner/.ssh/privatekey.pem <br>
 _Linux_: /home/owner/.ssh/privatekey.pem <br>
@@ -83,13 +84,18 @@ Then paste it into the server. <br>
 `$ sudo service ssh restart` to restart ssh.
 * UFW firewall configuration
 ![Firewall](img/Firewall.png)
+
+You can now use this new key pair and this new port to connect to server.
+![ssh windows](img/ssh_win.png)
+![ssh linux](img/ssh_linux.png)
+
 * Change Time Zone to UTC (**sudo dpkg-reconfigure tzdata**). Scroll down to none of them  then select UTC.
 * install Apache2 `$ sudo apt-get install apache2` and test it
 ![Apache](img/ApacheCheck.png)
 `$ sudo apt-get install libapache2-mod-wsgi-py3` <br>
 `$ sudo service apache2 restart` to restart apache2
 * Installing pip: <br>
-It is advised to never use pip with sudo. Instead you should always install into your user directories (via pip install --user) or within virtualenvs
+It is advised to never use pip with sudo. Instead you should always install into your user directory (via pip install --user) or within virtualenvs
 ```
 $sudo nano ~/.profile
 # add these two lines at the end of `~/.profile` file:
@@ -171,6 +177,9 @@ If that's successful, certbot will ask how you'd like to configure your HTTPS se
 ![certbot](img/certbot_success.png)
 You can uncomment the same line: "WSGIDaemonProcess catalogapp user=grader group=grader threads=5" in the virtualHost and notice the three last lines added by certbot.
 ![virtualHost](img/virtualhost_edited.png)
+Notice the new virtualHost created by certbot : `catalogapp-le-ssl.conf` in order to redirect HTTP to HTTPS <br>
+![New VirtualHost](img/new_virtualhost1.png)
+![New VirtualHost](img/new_virtualhost2.png)
 Use links provided in certbot report to test your configuration.
 ![SSLTest](img/SSLcertificate_test.png)
 Now Test your application in the Browser.
