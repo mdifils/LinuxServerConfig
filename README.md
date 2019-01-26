@@ -11,6 +11,7 @@ Here is a summary of information about my server for the reviewer:
 <ins>Amazon Web Service</ins>: To create a remote ubuntu server and to host my web application. <br>
 <ins>GoDaddy</ins>: To purchase and register the domain name of my web application. <br>
 <ins>Letsencrypt</ins>: To secure my web application with a free signed SSL certificate.<br>
+<ins>Digital Ocean</ins>: for some guidelines. <br>
 * **A summary of software I installed**: <br>
 <ins>Finger</ins>: <br>
 <ins>New user added</ins>: <br>
