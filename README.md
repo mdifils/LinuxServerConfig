@@ -8,7 +8,7 @@ Here is a summary of information about my server for the reviewer:
 * **The IP address and SSH port**,  IP: **35.177.223.249** and Port: **2200**
 * **The complete URL to my hosted web application**: [https://movie.actors.mdifils.com](https://movie.actors.mdifils.com)
 * **A list of some third-party resources I used to complete this project**: <br>
-<ins>Amazon Web Service</ins>: To create a remote ubuntu server and to host my web application.
+<ins>Amazon Web Service</ins>: To create a remote ubuntu server and to host my web application. <br>
 <ins>GoDaddy</ins>: To purchase and register the domain name of my web application. <br>
 <ins>Letsencrypt</ins>: To secure my web application with a free signed SSL certificate.<br>
 * **A summary of software I installed**: <br>
