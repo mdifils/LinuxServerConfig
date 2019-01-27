@@ -180,6 +180,7 @@ By default PostgreSQL doesn't allow remote connections, let's double check it.
 We have either local or 127.0.0.1/32 (IPv4) and ::/128 (IPv6) which are both interfaces that specify the local machine. That means no remote connections are allowed.<br>
 **Creating New database user**: with _name_: catalog and _password_: catalog, _database_: movieactors
 
+By default, Postgres creates a Linux superuser  called "postgres" which can be used to access the system.
 ```
 grader@ip-172-31-22-109:~$ sudo su - postgres
 postgres@ip-172-31-22-109:~$ psql
