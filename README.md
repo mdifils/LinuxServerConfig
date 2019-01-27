@@ -203,7 +203,7 @@ grader@ip-172-31-22-109:~$
 Let's connect the database with our flask application. First of all we need to edit our flask application to use PostgreSQL as database engine instead of SQLite.
 
 ![database](img/database.png)
-Be aware that our flask application is written in python. Unlike SQLite which comes built in python, PostgreSQL needs a DB-API to communicate with python. That is why we are going to install Pscycopg2, likely for us we won't use it directly in our program. Flask-SQLAlchemy will take of that for us  by converting classes in our models.py file into tables within our database movieactors. Flask-Migrate will take of migrations and commit changes into into the database.
+Be aware that our flask application is written in python. Unlike SQLite which comes built in python, PostgreSQL needs a DB-API to communicate with python. That is why we are going to install Pscycopg2, likely for us we won't use it directly in our program. Flask-SQLAlchemy will take care of that for us  by converting classes in our models.py file into tables within our database movieactors. Flask-Migrate will take care of migrations and commit changes into the database.
 ```
 (venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ pip install psycopg2-binary
 (venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ flask db init
