@@ -7,6 +7,10 @@ Here is a summary of information about my server for the reviewer:
 
 * **The IP address and SSH port**,  IP: **35.177.223.249** and Port: **2200**
 * **The complete URL to my hosted web application**: [https://movie.actors.mdifils.com](https://movie.actors.mdifils.com)
+* **App directory(WSGIScript File in/web root path)**: /var/www/flaskApp/catalogApp/
+* **'grader' SSH private key**: provided durint submission.
+* **'grader' SSH passphrase**: `ubuntuserverconfig`.
+* **'grader' user password**: `grader`
 * **A list of some third-party resources I used to complete this project**: <br>
 <ins>Amazon Web Service</ins>: To create a remote ubuntu server and to host my web application. <br>
 <ins>GoDaddy</ins>: To purchase and register the domain name of my web application. <br>
@@ -70,11 +74,24 @@ There are many ways to do that, you can create lightsail or EC2 instances with [
 * Give grader sudo access <br>
 `$ sudo nano /etc/sudoers.d/grader` write and save this file.
 ![sudo_grader](img/Sudo_grader.png)
+Adding 'grader' user in sudo group. <br>
+![sudo group](img/sudo_group.png)
 * Create a new key pair <br>
 On LOCAL computer generate key pair using ssh-keygen <br>
 ![ssh-key](img/ssh-keygen.png)
 On server side, use (**su grader** followed by password: grader). Switch to grader user to load in public key file. Make sure you are in grader home directory (/home/grader) by checking with this command: `$ pwd` <br>
 `$ sudo touch .ssh/authorized_keys` <br>
+The ~/.ssh/authorized_keys file contains public keys for authentication.
+Each line of the file contains one SSH public key specification (empty lines and lines starting with # are ignored as comments). It should not be opened to anyone, so let's set up permission accordingly.<br>
+```
+$ sudo chmod 700 .ssh
+$ sudo chmod 644 .ssh/authorized_keys
+$ ls -al .ssh
+total 12
+drwx------ 2 grader grader 4096 Jan 26 23:19 .
+drwxr-xr-x 7 grader grader 4096 Jan 26 12:09 ..
+-rw-r--r-- 1 grader grader  403 Jan 17 04:38 authorized_keys
+```
 Copy public key in the local machine <br>
 `$ cat /c/Users/miche/.ssh/ubuntuserverconfig.pem.pub` <br>
 Then paste it into the server. <br>
@@ -113,7 +130,7 @@ pip 18.1 from /home/grader/.local/lib/python3.6/site-packages/pip (python 3.6)
 # Installing virtualenv
 $ pip install virtualenv --user
 ```
-* Deploying flask application
+* **Deploying flask application**
 ```
 $ sudo mkdir -p /var/www/flaskApp/catalogApp
 # Giving ownership
@@ -131,6 +148,7 @@ $ git clone https://github.com/mdifils/CatalogApp.git
 $ sudo nano /etc/apache2/sites-available/catalogapp.conf
 ```
 ![flaskAppConf](img/flaskApp_conf.png)
+
 ```
 # Disabling the default virtualHost and enabling the new one.
 $ sudo a2dissite 000-default.conf
@@ -141,7 +159,69 @@ $ sudo service apache2 restart
 ```
 ![flaskAppWsgi](img/flaskApp_wsgi.png)
 
-![flaskAppWsgi](img/flaskApp_folder.png)
+**Installing and configuring PostgreSQL**
+```
+$ sudo apt-get install -y postgresql postgresql-contrib
+
+Success. You can now start the database server using:
+
+    /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
+
+Ver Cluster Port Status Owner    Data directory              Log file
+10  main    5432 down   postgres /var/lib/postgresql/10/main /var/log/postgresql/postgresql-10-main.log
+```
+By default PostgreSQL doesn't allow remote connections, let's double check it.
+
+![postgres](img/Noremote_connection.png)
+
+We have either local or 127.0.0.1/32 (IPv4) and ::/128 (IPv6) which are both interfaces that specify the local machine. That means no remote connections are allowed.<br>
+**Creating New database user**: with _name_: catalog and _password_: catalog, _database_: movieactors
+
+```
+grader@ip-172-31-22-109:~$ sudo su - postgres
+postgres@ip-172-31-22-109:~$ psql
+psql (10.6 (Ubuntu 10.6-0ubuntu0.18.04.1))
+Type "help" for help.
+
+postgres=# CREATE ROLE catalog WITH createdb;
+CREATE ROLE
+postgres=# ALTER ROLE catalog WITH login;
+ALTER ROLE
+postgres=# ALTER ROLE catalog WITH PASSWORD 'catalog';
+ALTER ROLE
+postgres=# CREATE DATABASE movieactors WITH OWNER catalog;
+CREATE DATABASE
+postgres=# \q
+postgres@ip-172-31-22-109:~$ exit
+logout
+grader@ip-172-31-22-109:~$
+```
+Let's connect the database with our flask application
+
+![database](img/database.png)
+```
+(venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ pip install psycopg2-binary
+(venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ flask db init
+(venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ flask db migrate -m "first migration"
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.autogenerate.compare] Detected added table 'users'
+INFO  [alembic.autogenerate.compare] Detected added index 'ix_users_email' on '['email']'
+INFO  [alembic.autogenerate.compare] Detected added index 'ix_users_username' on '['username']'
+INFO  [alembic.autogenerate.compare] Detected added table 'actors'
+INFO  [alembic.autogenerate.compare] Detected added index 'ix_actors_name' on '['name']'
+INFO  [alembic.autogenerate.compare] Detected added table 'blogPosts'
+INFO  [alembic.autogenerate.compare] Detected added table 'movies'
+  Generating
+  /var/www/flaskApp/catalogApp/migrations/versions/680ad94cd943_first_migration.py
+  ... done
+(venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ flask db upgrade
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 680ad94cd943, first migration
+```
+We have connected the database with our flask application, let's check it:
+![Database check](img/database_check.png)
 
 ```
 # Setting up SSL
@@ -149,17 +229,17 @@ $ sudo add-apt-repository ppa:certbot/certbot
 $ sudo apt install python3-certbot-apache
 # Allowing HTTPS through the Firewall
 $ sudo ufw allow 443/tcp
+# blocking port 22
+$ sudo ufw delete allow ssh
 $ sudo ufw status
 Status: active
 
 To                         Action      From
 --                         ------      ----
-22/tcp                     ALLOW       Anywhere
 2200/tcp                   ALLOW       Anywhere
 80/tcp                     ALLOW       Anywhere
 123/udp                    ALLOW       Anywhere
 443/tcp                    ALLOW       Anywhere
-22/tcp (v6)                ALLOW       Anywhere (v6)
 2200/tcp (v6)              ALLOW       Anywhere (v6)
 80/tcp (v6)                ALLOW       Anywhere (v6)
 123/udp (v6)               ALLOW       Anywhere (v6)
