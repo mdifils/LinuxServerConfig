@@ -270,3 +270,6 @@ Use links provided in certbot report to test your configuration.
 ![SSLTest](img/SSLcertificate_test.png)
 Now Test your application in the Browser.
 ![Browser](img/flaskApp.png)
+
+Check database
+![Check database](img/Final_Check.png)
