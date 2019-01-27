@@ -32,6 +32,8 @@ Here is a summary of information about my server for the reviewer:
 <ins>Flask-Migrate</ins>: <br>
 <ins>Oauth2client</ins>: <br>
 <ins>requests</ins>: <br>
+<ins>PostgreSQL</ins>: <br>
+<ins>Pscycopg2</ins>: <br>
 <ins>certbot</ins>: <br>
 * **SSH key location**: <br>
 <ins>Public key</ins>: /home/grader/.ssh/authorized_keys. <br>
@@ -96,9 +98,9 @@ Copy public key in the local machine <br>
 `$ cat /c/Users/miche/.ssh/ubuntuserverconfig.pem.pub` <br>
 Then paste it into the server. <br>
 `$ nano .ssh/authorized_keys `
-* Change SSH Port to 2200 <br>
+* Change SSH Port to 2200 and disable root Login<br>
 `$ sudo nano /etc/ssh/sshd_config` modify and save
-![ssh_port](img/ssh_port.png)
+![ssh_port](img/NewSSH_port.png)
 `$ sudo service ssh restart` to restart ssh.
 * UFW firewall configuration
 ![Firewall](img/Firewall.png)
@@ -110,6 +112,7 @@ You can now use this new key pair and this new port to connect to server.
 * Change Time Zone to UTC (**sudo dpkg-reconfigure tzdata**). Scroll down to none of them  then select UTC.
 * install Apache2 `$ sudo apt-get install apache2` and test it
 ![Apache](img/ApacheCheck.png)
+Apache can do much more than just returning a file, we need to install the package below to allow Apache handling our flask application.<br>
 `$ sudo apt-get install libapache2-mod-wsgi-py3` <br>
 `$ sudo service apache2 restart` to restart apache2
 * Installing pip: <br>
@@ -126,7 +129,7 @@ $ sudo apt-get install -y python3-dev
 $ curl -LO https://bootstrap.pypa.io/get-pip.py
 $ python3 get-pip.py --user
 $ pip -V
-pip 18.1 from /home/grader/.local/lib/python3.6/site-packages/pip (python 3.6)
+pip 19.0.1 from /home/grader/.local/lib/python3.6/site-packages/pip (python 3.6)
 # Installing virtualenv
 $ pip install virtualenv --user
 ```
@@ -196,9 +199,10 @@ postgres@ip-172-31-22-109:~$ exit
 logout
 grader@ip-172-31-22-109:~$
 ```
-Let's connect the database with our flask application
+Let's connect the database with our flask application. First of all we need to edit our flask application to use PostgreSQL as database engine instead of SQLite.
 
 ![database](img/database.png)
+Be aware that our flask application is written in python. Unlike SQLite which comes built in python, PostgreSQL needs a DB-API to communicate with python. That is why we are going to install Pscycopg2, likely for us we won't use it directly in our program. Flask-SQLAlchemy will take of that for us  by converting classes in our models.py file into tables within our database movieactors. Flask-Migrate will take of migrations and commit changes into into the database.
 ```
 (venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ pip install psycopg2-binary
 (venv) grader@ip-172-31-22-109:/var/www/flaskApp/catalogApp$ flask db init
